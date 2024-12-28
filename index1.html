@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Bus Seva</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: black;
+            font-family: Arial, sans-serif;
+            overflow-y: scroll;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            color: rgb(255, 255, 255);
+            background-color: rgba(0, 0, 0, 0.5);
+            font-family: cursive;
+            margin-top: 60px;
+        }
+
+        .select-route-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.2s ease-in-out;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            width: 150px;
+            height: 50px;
+        }
+
+        /* Animation for car driving on the road */
+        .select-route-button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            /* Start from outside the button */
+            transform: translateY(-50%);
+            background-image: url('https://images.unsplash.com/photo-1604512045293-d5f36c6ff74a');
+            /* Car image URL */
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 30px;
+            /* Adjust the width of the car */
+            height: 30px;
+            /* Adjust the height of the car */
+            transition: left 0.5s ease;
+        }
+
+        /* Hover effect for driving the car on the road */
+        .select-route-button:hover::before {
+            left: 100%;
+            /* Move car across the button */
+        }
+
+        /* Bounce animation on hover */
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .select-route-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            animation: bounce 0.5s;
+        }
+
+
+
+        nav {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            position: fixed;
+            /* Fix the nav at the top */
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            /* Make the nav stretch across the page */
+            z-index: 1000;
+            /* Ensure it stays on top of other content */
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* For Safari */
+            transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.2s ease-in-out;
+            position: relative;
+        }
+
+        nav button {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* For Safari */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.2s ease-in-out;
+            margin-left: auto;
+        }
+
+        nav button.glow {
+            animation: glow 5s ease infinite, cartoon-glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(0, 0, 255, 0.7);
+            }
+        }
+
+        @keyframes cartoon-glow {
+            0% {
+                box-shadow: 0 0 10px #ff1493, 0 0 5px #ff1493, 0 0 10px #ff1493, 0 0 5px #ff1493, 0 0 10px #ff1493, 0 0 5px #ff1493, 0 0 10px #ff1493;
+            }
+
+            50% {
+                box-shadow: 0 0 20px yellow, 0 0 5px yellow, 0 0 10px yellow, 0 0 5px yellow, 0 0 10px yellow, 0 0 5px yellow, 0 0 10px yellow;
+            }
+
+            100% {
+                box-shadow: 0 0 20px #1e90ff, 0 0 5px #1e90ff, 0 0 10px #1e90ff, 0 0 5px #1e90ff, 0 0 10px #1e90ff, 0 0 5px #1e90ff, 0 0 10px #1e90ff;
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        nav a:hover,
+        nav button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            animation: bounce 0.5s;
+        }
+
+        .glow {
+            animation: glow 5s ease infinite, cartoon-glow 2s infinite alternate;
+        }
+
+        .profile-button {
+            position: absolute;
+            top: 70px;
+            /* Adjust based on your header/nav height */
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgb(193, 255, 8);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .profile-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-button:hover {
+            transform: scale(1.1);
+        }
+
+        main {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1 1 auto;
+            padding: 60px 20px 20px;
+        }
+
+        .container-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 0 1 auto;
+        }
+
+        .container {
+            width: 400px;
+            height: 500px;
+            margin: 10px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* For Safari */
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 255, 0.7);
+            /* Blue glow on hover */
+        }
+
+        .container img {
+            width: 400px;
+            height: 500px;
+
+            border-radius: 15px;
+            /* Optional: add some rounding to the corners of the image */
+            display: block;
+            /* Remove any extra space below the image */
+            object-fit: cover;
+        }
+
+        .image-overlay {
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+
+        .image-overlay img {
+            width: 100%;
+            height: auto;
+            /* Maintain aspect ratio */
+            border-radius: 10px;
+            /* Optional: add some rounding to the corners of the image */
+            display: block;
+            /* Remove any extra space below the image */
+        }
+
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: blueviolet;
+            font: bold;
+
+            font-size: 30px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            text-align: center;
+
+        }
+
+
+
+        .discussion-section {
+            width: 80%;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* For Safari */
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            text-align: left;
+        }
+
+        .sathi-section {
+            width: 80%;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* For Safari */
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            text-align: left;
+        }
+
+        .sathi-section h2 {
+            background: linear-gradient(45deg, #ff6ec7, #f7b7a3, #1e90ff, #32cd32);
+            /* Modern gradient colors */
+            background-clip: text;
+            -webkit-background-clip: text;
+            /* For Safari */
+            color: transparent;
+            /* Makes the text transparent to show the gradient */
+            font-weight: bold;
+            /* Optional: makes the font bold */
+            font-size: 30px;
+            /* /* Adjust the */
+        }
+
+        .sathi-section img {
+            width: auto;
+            height: auto;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+
+        .sathi-section img:hover {
+            transform: scale(1.1) rotate(5deg);
+            filter: brightness(1.2);
+            /* Slightly brightens the image on hover */
+        }
+
+        /* Create an animated cursor effect */
+        .sathi-section img.cursor-interaction {
+            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+        }
+
+
+        .about-section {
+            width: 80%;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            text-align: left;
+        }
+
+        /* footer {
+            margin: 0;
+            background-color: violet;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: white;
+            flex: 0 1 auto;
+            padding: 10px;
+            text-align: center;
+        } */
+        /* Footer Styling */
+        /* Footer Styling */
+        footer {
+            background-color: #f94003a5;
+            color: #ecf0f1;
+            padding: 40px 0;
+            text-align: left;
+        }
+
+        .footer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Apply animation to each footer section */
+        .footer-info,
+        .footer-links,
+        .footer-social,
+        .footer-newsletter {
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+            opacity: 0;
+            /* Start as invisible */
+            animation: fadeInUp 1s forwards;
+            /* Apply fadeInUp animation */
+        }
+
+        .footer-info {
+            animation-delay: 0.2s;
+        }
+
+        .footer-links {
+            animation-delay: 0.4s;
+        }
+
+        .footer-social {
+            animation-delay: 0.6s;
+        }
+
+        .footer-newsletter {
+            animation-delay: 0.8s;
+        }
+
+        /* Rest of the footer styles */
+        .footer-info h3,
+        .footer-links h4,
+        .footer-social h4,
+        .footer-newsletter h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .footer-info p,
+        .footer-links ul,
+        .footer-social ul {
+            margin: 5px 0;
+        }
+
+        .footer-links ul,
+        .footer-social ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .footer-links li,
+        .footer-social li {
+            margin: 5px 0;
+        }
+
+        .footer-links a,
+        .footer-social a {
+            text-decoration: none;
+            color: #ecf0f1;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover,
+        .footer-social a:hover {
+            color: #3498db;
+        }
+
+        .footer-newsletter form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-newsletter input[type="email"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .footer-newsletter button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .footer-newsletter button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .footer-container {
+                padding: 20px;
+            }
+        }
+
+
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: center;
+                padding: 15px;
+            }
+
+            nav {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            nav a {
+                margin: 5px;
+                font-size: 14px;
+            }
+
+            .select-route-button {
+                width: 120px;
+                height: 45px;
+            }
+
+            .container {
+                width: 90%;
+                height: auto;
+                margin: 10px 0;
+            }
+
+            .container img {
+                height: 300px;
+                object-fit: cover;
+            }
+
+            .container-wrapper {
+                flex-direction: column;
+            }
+
+            .sathi-section img {
+                width: 100%;
+                height: auto;
+            }
+
+            .profile-button {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Additional Mobile Styles */
+        @media (max-width: 480px) {
+            main {
+                padding: 40px 10px 10px;
+            }
+
+            .container-wrapper {
+                margin-bottom: 10px;
+            }
+
+            .container {
+                width: 100%;
+                height: auto;
+            }
+
+            .overlay-text {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Welcome Passenger !!</h1>
+        <button class="select-route-button">Select Route</button>
+
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about-section">About</a>
+            <a href="#services">Services</a>
+            <a href="#contact"> Virtual Map</a>
+            <a href="#contact"> Sathi </a>
+            <a href="#contact"> Lost and Found</a>
+            <a href="#contact"> Emergency Mode</a>
+            <a href="#contact">sign in/sign up</a>
+            <button onclick="toggleGlow()">Smart Glow</button>
+        </nav>
+        <div class="profile-button"> <img src="profile-pic-url" alt="Google Account" /> </div>
+        <div id="profileModal" class="modal">
+
+
+
+
+
+        </div>
+
+    </header>
+
+    <main>
+        <section>
+            <div class="container-wrapper">
+                <div class="container">
+                    <div class="image-overlay"></div>
+                    <img src="https://plus.unsplash.com/premium_vector-1729839663484-09b7698cd401?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZGlnaXRhbCUyMG1hcHMlMjBpbmRpYXxlbnwwfHwwfHx8MA%3D%3D"
+                        alt="error">
+                    <div class="overlay-text">VIRTUAL MAP</div>
+
+                </div>
+
+
+                <div class="container-wrapper">
+                    <a href="sathiindex.html" target="_main">
+                    <div class="container">
+                        <div class="image-overlay"></div>
+                        <img src="https://cdn.pixabay.com/photo/2022/08/07/07/50/skateboard-7370081_640.png"
+                            alt="error">
+                        <div class="overlay-text">Sathi</div>
+                    </a>
+
+                    </div>
+
+
+
+                    <!-- emergency mode container -->
+
+                    <div class="container-wrapper">
+                        <div class="container">
+                            <div class="image-overlay"></div>
+                            <img src="https://plus.unsplash.com/premium_vector-1715183036929-6e3d146b044d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGVtZXJnZW5jeSUyMG1vZGV8ZW58MHx8MHx8fDA%3D"
+                                alt="error">
+                            <div class="overlay-text">Emergency Mode</div>
+
+                        </div>
+                        <!-- <div class="container">Lost and Found</div> -->
+                        <div class="container-wrapper">
+                            <div class="container">
+                                <div class="image-overlay"></div>
+                                <img src="https://cdn.pixabay.com/photo/2016/06/15/11/27/lost-and-found-1458766_640.png"
+                                    alt="error">
+                                <div class="overlay-text">Lost and Found</div>
+
+                            </div>
+
+        </section>
+        <section class="discussion-section" id="discussion-section">
+            <h2>Virtual Map Discussion</h2>
+
+            <p>Here you can discuss features, give feedback, and share your experiences with our Virtual Map tool. Let's
+                work together to improve and enhance the functionality of the Virtual Map.</p>
+        </section>
+        <section class="sathi-section" id="sathi-section">
+            <h2>Sathi</h2>
+            <img src="https://plus.unsplash.com/premium_vector-1723817905928-c0e527718465?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fHdvbWVuJTIwc2FmZXR5fGVufDB8fDB8fHww"
+                alt="Error">
+
+            <p>Here you can discuss features, give feedback, and share your experiences with our Virtual Map tool. Let's
+                work together to improve and enhance the functionality of the Virtual Map.</p>
+        </section>
+        <section class="about-section" id="about-section">
+            <h2>About Us</h2>
+            <p>Welcome to Expense Manager! Our mission is to help you manage your finances efficiently and effortlessly.
+                Our tool allows you to track expenses, set budgets, and achieve your financial goals. Stay on top of
+                your finances with our easy-to-use interface and insightful reports.</p>
+        </section>
+    </main>
+
+    <!-- <footer>
+        <p>ph no. 9898xxxx849</p>
+        <p>&copy; 2024 Expense Manager</p>
+    </footer> -->
+    <footer>
+        <div class="footer-container">
+            <!-- Company Information Section -->
+            <div class="footer-info">
+                <h3>Company Name</h3>
+                <p>123 Business Address, City, Country</p>
+                <p>Phone: +1 (123) 456-7890</p>
+                <p>Email: info@company.com</p>
+            </div>
+
+            <!-- Quick Links Section -->
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Social Media Links Section -->
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <ul>
+                    <li><a href="#" class="social-icon">Facebook</a></li>
+                    <li><a href="#" class="social-icon">Twitter</a></li>
+                    <li><a href="#" class="social-icon">LinkedIn</a></li>
+                    <li><a href="#" class="social-icon">Instagram</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter Section -->
+            <div class="footer-newsletter">
+                <h4>Subscribe to Our Newsletter</h4>
+                <form action="#" method="post">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script>
+        function toggleGlow() {
+            const navLinks = document.querySelectorAll('nav a');
+            const toggleButton = document.querySelector('nav button');
+            let isGlowing = false;
+
+            navLinks.forEach(link => {
+                if (link.classList.contains('glow')) {
+                    isGlowing = true;
+                }
+                link.classList.toggle('glow');
+            });
+
+            if (!isGlowing) {
+                toggleButton.classList.remove('glow');
+            } else {
+                toggleButton.classList.add('glow');
+            }
+        }
+    </script>
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Interactive 3D Sathi Section</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #121212;
+                color: white;
+                transition: background-color 0.5s ease, color 0.5s ease;
+                /* Smooth transition for background and text color */
+            }
+
+            header,
+            .nav-button,
+            .sathi-section h3 {
+                color: inherit;
+                /* Ensure headings and navigation buttons keep their color */
+            }
+
+
+
+            .sathi-section img:hover {
+                transform: scale(1.05);
+                filter: brightness(1.2);
+            }
+
+            /* Navigation button styles */
+            .nav-button {
+                padding: 10px;
+                background-color: #007BFF;
+                color: white;
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+                margin: 10px;
+                transition: background-color 0.3s ease;
+            }
+
+            .nav-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+
+
+
+    <script>
+        // Get references to elements
+        const sathiImage = document.querySelector('.sathi-section img');
+        const sathiSection = document.querySelector('.sathi-section');
+        const navButtons = document.querySelectorAll('.nav-button');
+        const allTextElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, .sathi-section p');
+
+        // Mousemove event to track cursor movement
+        sathiSection.addEventListener('mousemove', (e) => {
+            // Get the position of the mouse relative to the container
+            const sathiRect = sathiSection.getBoundingClientRect();
+            const x = e.clientX - sathiRect.left;
+            const y = e.clientY - sathiRect.top;
+
+            // Get the center of the container
+            const centerX = sathiSection.offsetWidth / 2;
+            const centerY = sathiSection.offsetHeight / 2;
+
+            // Calculate the percentage of the mouse position within the container
+            const deltaX = (x - centerX) / centerX; // X axis movement (-1 to 1)
+            const deltaY = (y - centerY) / centerY; // Y axis movement (-1 to 1)
+
+            // Apply the 3D rotation based on mouse position
+            const rotationX = deltaY * 15; // Rotate the image along the X axis
+            const rotationY = -deltaX * 15; // Rotate the image along the Y axis
+
+            // Set the image's transformation to create the 3D effect
+            sathiImage.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+        });
+
+        // Reset image rotation when the mouse leaves the container
+        sathiSection.addEventListener('mouseleave', () => {
+            sathiImage.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        });
+
+        // Save the initial background color and text color
+        const initialBackgroundColor = getComputedStyle(document.body).backgroundColor;
+        const initialTextColor = getComputedStyle(document.body).color;
+
+        let lastScrollTop = 0;
+
+        // Change background color and text color based on scroll direction
+        window.addEventListener('scroll', () => {
+            const currentScrollTop = window.scrollY;
+
+            if (currentScrollTop > lastScrollTop) {
+                // Scrolling down
+                document.body.style.backgroundColor = 'white';
+                document.body.style.color = 'black';
+
+                // Change text color of all elements except headings and nav buttons
+                allTextElements.forEach(element => {
+                    element.style.color = 'black';
+                });
+            } else {
+                // Scrolling up
+                document.body.style.backgroundColor = initialBackgroundColor;
+                document.body.style.color = initialTextColor;
+
+                // Revert text color of all elements back to the initial color
+                allTextElements.forEach(element => {
+                    element.style.color = initialTextColor;
+                });
+            }
+
+            lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Prevent negative scroll values
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+</body>
+
+</html>
